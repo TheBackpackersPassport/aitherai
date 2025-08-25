@@ -5,7 +5,8 @@ import { SessionData, sessionOptions } from '@/lib/session';
 
 export async function POST() {
   try {
-    const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
     session.destroy();
 
     return NextResponse.json(
