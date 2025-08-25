@@ -1,26 +1,415 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6366f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8b5cf6;
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-purple-primary to-purple-secondary bg-clip-text text-transparent;
+}
+
+/* Custom select dropdown styles */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.5em;
+  padding-right: 3rem;
+}
+
+select:focus {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2306b6d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Glass effect for dropdown options - works in supported browsers */
+select option {
+  background: rgba(26, 0, 51, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  color: #ffffff !important;
+  padding: 0.75rem;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.3)) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* Additional styling for select dropdown menu */
+select {
+  background-color: rgba(26, 0, 51, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+select:focus {
+  background-color: rgba(26, 0, 51, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* For webkit browsers - enhanced dropdown styling */
+@supports (-webkit-appearance: none) {
+  select option {
+    background: rgba(15, 0, 30, 0.98) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  }
+  
+  select option:hover,
+  select option:checked {
+    background: linear-gradient(to right, rgba(139, 92, 246, 0.35), rgba(6, 182, 212, 0.25)) !important;
+    backdrop-filter: blur(25px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Custom checkbox and radio styles */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(139, 92, 246, 0.5);
+  border-radius: 0.25rem;
+  background: rgba(26, 0, 51, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+input[type="radio"] {
+  border-radius: 50%;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  border-color: #06b6d4;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background: white;
+  border-radius: 50%;
+}
+
+input[type="checkbox"]:hover,
+input[type="radio"]:hover {
+  border-color: #06b6d4;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-xl;
+}
+
+.btn-secondary {
+  @apply border-2 border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105;
+}
+
+/* Card styles with improved visibility */
+.card {
+  @apply bg-cosmic-dark/80 backdrop-blur-lg border border-purple-primary/30 rounded-xl p-8 shadow-2xl;
+}
+
+/* Section padding */
+.section-padding {
+  @apply py-20 px-4 md:px-8 lg:px-16;
+}
+
+/* Liquid Paint Animation */
+@keyframes morph1 {
+  0%, 100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: rotate(0deg) scale(1) translateX(0) translateY(0);
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    transform: rotate(90deg) scale(1.2) translateX(100px) translateY(-50px);
+  }
+  50% {
+    border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%;
+    transform: rotate(180deg) scale(0.9) translateX(-50px) translateY(100px);
+  }
+  75% {
+    border-radius: 40% 60% 30% 70% / 70% 40% 60% 30%;
+    transform: rotate(270deg) scale(1.1) translateX(50px) translateY(50px);
+  }
+}
+
+@keyframes morph2 {
+  0%, 100% {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    transform: rotate(0deg) scale(1) translateX(0) translateY(0);
+  }
+  25% {
+    border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+    transform: rotate(-90deg) scale(0.8) translateX(-100px) translateY(50px);
+  }
+  50% {
+    border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+    transform: rotate(-180deg) scale(1.3) translateX(50px) translateY(-100px);
+  }
+  75% {
+    border-radius: 60% 40% 40% 60% / 60% 60% 40% 40%;
+    transform: rotate(-270deg) scale(1.1) translateX(-50px) translateY(-50px);
+  }
+}
+
+@keyframes morph3 {
+  0%, 100% {
+    border-radius: 43% 57% 61% 39% / 65% 38% 62% 35%;
+  }
+  20% {
+    border-radius: 62% 38% 46% 54% / 70% 30% 70% 30%;
+    transform: rotate(120deg) scale(0.92) translateX(8%) translateY(-12%);
+  }
+  40% {
+    border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+    transform: rotate(240deg) scale(1.08) translateX(-10%) translateY(8%);
+  }
+  60% {
+    border-radius: 66% 34% 54% 46% / 42% 58% 42% 58%;
+    transform: rotate(360deg) scale(0.98) translateX(12%) translateY(-5%);
+  }
+  80% {
+    border-radius: 32% 68% 38% 62% / 65% 60% 40% 35%;
+    transform: rotate(480deg) scale(1.04) translateX(-6%) translateY(10%);
+  }
+}
+
+@keyframes morph4 {
+  0%, 100% {
+    border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+    transform: rotate(0deg) scale(1) translateX(0) translateY(0);
+  }
+  30% {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    transform: rotate(-108deg) scale(1.4) translateX(80px) translateY(-80px);
+  }
+  60% {
+    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+    transform: rotate(-216deg) scale(0.6) translateX(-80px) translateY(80px);
+  }
+  90% {
+    border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+    transform: rotate(-324deg) scale(1.2) translateX(40px) translateY(40px);
+  }
+}
+
+@keyframes floatGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.liquid-paint-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0.7;
+  pointer-events: none;
+  animation: breathe 8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 0.8; }
+}
+
+.liquid-paint {
+  position: absolute;
+  filter: blur(40px);
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  will-change: transform;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 80px rgba(139, 92, 246, 0.3);
+}
+
+.liquid-paint-1 {
+  background: radial-gradient(circle at 30% 30%, #0ea5e9, #06b6d4, #14b8a6);
+  width: 60%;
+  height: 60%;
+  top: -30%;
+  left: -30%;
+  animation: morph1 15s ease-in-out infinite;
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+}
+
+.liquid-paint-2 {
+  background: radial-gradient(circle at 70% 70%, #3b82f6, #6366f1, #8b5cf6);
+  width: 50%;
+  height: 50%;
+  bottom: -30%;
+  right: -30%;
+  animation: morph2 18s ease-in-out infinite;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.liquid-paint-3 {
+  background: radial-gradient(ellipse at center, #10b981, #14b8a6, #06b6d4);
+  width: 45%;
+  height: 55%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: morph3 20s ease-in-out infinite;
+  border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+}
+
+.liquid-paint-4 {
+  background: radial-gradient(circle at 50% 50%, #6366f1, #8b5cf6, #a855f7);
+  width: 40%;
+  height: 40%;
+  bottom: 20%;
+  left: 30%;
+  animation: morph4 16s ease-in-out infinite;
+  border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%;
+}
+
+.liquid-paint-5 {
+  background: radial-gradient(ellipse at 60% 40%, #06b6d4, #0ea5e9, #3b82f6);
+  width: 50%;
+  height: 45%;
+  top: 25%;
+  right: -10%;
+  animation: morph1 18s ease-in-out infinite reverse;
+  border-radius: 50% 50% 30% 70% / 30% 70% 40% 60%;
+}
+
+/* Shimmer overlay effect */
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.liquid-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+/* Liquid Paint styles for Success Popup */
+.liquid-paint-popup {
+  position: absolute;
+  filter: blur(30px);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.liquid-paint-popup-1 {
+  width: 200px;
+  height: 200px;
+  top: -50px;
+  left: -50px;
+  background: radial-gradient(circle at 30% 30%, #8b5cf6, #06b6d4);
+  animation: morph1 15s ease-in-out infinite;
+}
+
+.liquid-paint-popup-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -30px;
+  right: -30px;
+  background: radial-gradient(circle at 70% 70%, #ec4899, #8b5cf6);
+  animation: morph2 12s ease-in-out infinite reverse;
+}
+
+.liquid-paint-popup-3 {
+  width: 180px;
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle at 50% 50%, #06b6d4, #10b981);
+  animation: morph3 18s ease-in-out infinite;
 }
