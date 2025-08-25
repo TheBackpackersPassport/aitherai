@@ -89,7 +89,7 @@ export default function SuccessPopup({ isOpen, onClose }: SuccessPopupProps) {
                     transition={{ delay: 0.5 }}
                     className="text-gray-400 mb-6"
                   >
-                    We'll get in touch with you within 24 hours to discuss your vision and next steps.
+                    We&apos;ll get in touch with you within 24 hours to discuss your vision and next steps.
                   </motion.p>
                   
                   {/* Close Button */}

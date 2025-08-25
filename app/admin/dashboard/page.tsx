@@ -163,7 +163,7 @@ export default function AdminDashboard() {
               <ol className="list-decimal list-inside space-y-2 ml-4">
                 <li>Place your HTML files in the <code className="text-purple-primary bg-cosmic-dark/50 px-2 py-1 rounded">public/tools/</code> directory</li>
                 <li>Update the placeholder divs above with iframe elements pointing to your tools</li>
-                <li>Example: <code className="text-purple-primary bg-cosmic-dark/50 px-2 py-1 rounded">&lt;iframe src="/tools/invoice.html" className="w-full h-96" /&gt;</code></li>
+                <li>Example: <code className="text-purple-primary bg-cosmic-dark/50 px-2 py-1 rounded">&lt;iframe src=&quot;/tools/invoice.html&quot; className=&quot;w-full h-96&quot; /&gt;</code></li>
               </ol>
               <p className="mt-4 text-sm text-gray-400">
                 The placeholders above are ready for your custom HTML tools to be integrated seamlessly into this dashboard.

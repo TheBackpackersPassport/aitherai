@@ -82,7 +82,7 @@ export default function ContactForm() {
             Ready to Start Your Custom Website?
           </h2>
           <p className="text-xl text-gray-300">
-            Tell us about your project and we'll create a personalized proposal for you.
+            Tell us about your project and we&apos;ll create a personalized proposal for you.
           </p>
         </motion.div>
 
@@ -261,7 +261,7 @@ export default function ContactForm() {
             {/* Primary Goal */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                What's the primary goal of your new website?
+                What&apos;s the primary goal of your new website?
               </label>
               <textarea
                 {...register('primaryGoal')}
