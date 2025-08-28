@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,7 +19,6 @@ export const metadata: Metadata = {
       { rel: 'mask-icon', url: '/favicon.svg', color: '#14B8A6' },
     ],
   },
-  themeColor: '#0f172a',
   manifest: '/site.webmanifest',
   openGraph: {
     title: "AitherAI - Create Without Limits",
@@ -29,13 +28,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: '#0f172a',
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className="antialiased">
         {children}
       </body>

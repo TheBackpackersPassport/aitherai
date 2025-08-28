@@ -16,6 +16,32 @@ export default function AdminLogin() {
   const [filesError, setFilesError] = useState('');
   const router = useRouter();
 
+  // Load private HTML files when authenticated
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!isAuthenticated) return;
+      setFilesLoading(true);
+      setFilesError('');
+      try {
+        const res = await fetch('/api/admin/files', { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`Failed to load files (${res.status})`);
+        }
+        const data = await res.json();
+        if (mounted) setFiles(Array.isArray(data.files) ? data.files : []);
+      } catch (e: any) {
+        if (mounted) setFilesError(e?.message || 'Unable to load files');
+      } finally {
+        if (mounted) setFilesLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [isAuthenticated]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -45,30 +71,6 @@ export default function AdminLogin() {
   };
 
   if (isAuthenticated) {
-    // Fetch available private HTML files once authenticated
-    useEffect(() => {
-      let mounted = true;
-      const load = async () => {
-        setFilesLoading(true);
-        setFilesError('');
-        try {
-          const res = await fetch('/api/admin/files', { cache: 'no-store' });
-          if (!res.ok) {
-            throw new Error(`Failed to load files (${res.status})`);
-          }
-          const data = await res.json();
-          if (mounted) setFiles(Array.isArray(data.files) ? data.files : []);
-        } catch (e: any) {
-          if (mounted) setFilesError(e?.message || 'Unable to load files');
-        } finally {
-          if (mounted) setFilesLoading(false);
-        }
-      };
-      load();
-      return () => {
-        mounted = false;
-      };
-    }, []);
     return (
       <div className="min-h-screen bg-gradient-to-br from-cosmic-dark via-cosmic-medium to-purple-primary/20 relative overflow-hidden">
         {/* Liquid Paint Animation Container */}
@@ -93,6 +95,7 @@ export default function AdminLogin() {
               width={400}
               height={160}
               className="mx-auto mb-8"
+              style={{ height: 'auto' }}
               priority
             />
             <h1 className="text-4xl font-bold text-white mb-4">Admin Dashboard</h1>
@@ -179,6 +182,7 @@ export default function AdminLogin() {
               width={400}
               height={160}
               className="mx-auto"
+              style={{ height: 'auto' }}
               priority
             />
           </div>

@@ -17,6 +17,7 @@ export default function Footer() {
                 width={150}
                 height={60}
                 className="cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ height: 'auto' }}
               />
             </Link>
             <p className="text-gray-500 text-sm mt-4">

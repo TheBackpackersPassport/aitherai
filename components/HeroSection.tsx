@@ -23,7 +23,6 @@ export default function HeroSection() {
               height={600}
               className="mx-auto mb-4 w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-[420px]"
               priority
-              quality={100}
               style={{
                 width: '100%',
                 height: 'auto',
