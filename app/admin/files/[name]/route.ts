@@ -28,7 +28,14 @@ export async function GET(_req: Request, context: unknown) {
     const filePath = path.join(process.cwd(), 'private-html', `${safeName}.html`);
 
     try {
-      const html = await fs.readFile(filePath, 'utf8');
+      let html = await fs.readFile(filePath, 'utf8');
+      // Inject <base> so relative paths resolve to assets route
+      if (!/\<base\s+/i.test(html)) {
+        html = html.replace(
+          /<head(\s[^>]*)?>/i,
+          (m) => `${m}\n    <base href="/admin/files/assets/">`
+        );
+      }
       return new Response(html, {
         status: 200,
         headers: {
