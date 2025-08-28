@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aitherai Invoice Generator</title>
+    <link rel="icon" type="image/png" href="Images/true Favicon Aitherai .dev (1).png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Logo -->
+        <header class="header">
+            <img src="Images/Aitherai .dev.png" alt="Aitherai Logo" class="logo">
+            <h1>Invoice Generator</h1>
+        </header>
+
+        <!-- Invoice Form -->
+        <div class="invoice-form">
+            <div class="form-section">
+                <h2>Invoice Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="invoiceNumber">Invoice Number</label>
+                        <input type="text" id="invoiceNumber" placeholder="INV-001">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDate">Invoice Date</label>
+                        <input type="date" id="invoiceDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Client Information</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" id="clientName" placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientCompany">Company Name</label>
+                        <input type="text" id="clientCompany" placeholder="ABC Corporation">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientEmail">Email</label>
+                        <input type="email" id="clientEmail" placeholder="client@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">Phone</label>
+                        <input type="tel" id="clientPhone" placeholder="+1 234 567 8900">
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="clientAddress">Address</label>
+                    <textarea id="clientAddress" rows="3" placeholder="123 Main Street&#10;City, State 12345&#10;Country"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Services</h2>
+                <div id="servicesContainer">
+                    <div class="service-item">
+                        <div class="form-row">
+                            <div class="form-group flex-3">
+                                <label>Description</label>
+                                <input type="text" class="service-description" placeholder="Custom Website Development">
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" class="service-quantity" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Rate ($)</label>
+                                <input type="number" class="service-rate" placeholder="0.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount ($)</label>
+                                <input type="number" class="service-amount" readonly>
+                            </div>
+                            <button type="button" class="remove-service" onclick="removeService(this)">×</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-secondary" onclick="addService()">+ Add Service</button>
+            </div>
+
+            <div class="form-section">
+                <h2>Additional Information</h2>
+                <div class="form-group full-width">
+                    <label for="projectDescription">Project Description</label>
+                    <textarea id="projectDescription" rows="3" placeholder="Brief description of the project..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="paymentTerms">Payment Terms</label>
+                    <textarea id="paymentTerms" rows="2" placeholder="Net 30 days, 2% late fee after due date..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="2" placeholder="Additional notes or special instructions..."></textarea>
+                </div>
+            </div>
+
+            <div class="totals-section">
+                <div class="totals">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax (%):</span>
+                        <input type="number" id="taxRate" value="0" min="0" max="100" step="0.01" onchange="calculateTotals()">
+                    </div>
+                    <div class="total-row">
+                        <span>Tax Amount:</span>
+                        <span id="taxAmount">$0.00</span>
+                    </div>
+                    <div class="total-row total">
+                        <span>Total:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn-primary" onclick="generateInvoice()">Generate Invoice</button>
+                <button type="button" class="btn-secondary" onclick="clearForm()">Clear Form</button>
+            </div>
+        </div>
+
+        <!-- Invoice Preview (Hidden by default) -->
+        <div id="invoicePreview" class="invoice-preview hidden">
+            <div class="invoice-actions">
+                <button onclick="printInvoice()" class="btn-primary">Print Invoice</button>
+                <button onclick="downloadPDF()" class="btn-primary">Download PDF</button>
+                <button onclick="editInvoice()" class="btn-secondary">Edit Invoice</button>
+            </div>
+            <div id="invoiceContent" class="invoice-content">
+                <!-- Invoice content will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

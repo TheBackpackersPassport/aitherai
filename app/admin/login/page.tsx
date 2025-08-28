@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -11,6 +11,9 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [files, setFiles] = useState<string[]>([]);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const [filesError, setFilesError] = useState('');
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,6 +45,30 @@ export default function AdminLogin() {
   };
 
   if (isAuthenticated) {
+    // Fetch available private HTML files once authenticated
+    useEffect(() => {
+      let mounted = true;
+      const load = async () => {
+        setFilesLoading(true);
+        setFilesError('');
+        try {
+          const res = await fetch('/api/admin/files', { cache: 'no-store' });
+          if (!res.ok) {
+            throw new Error(`Failed to load files (${res.status})`);
+          }
+          const data = await res.json();
+          if (mounted) setFiles(Array.isArray(data.files) ? data.files : []);
+        } catch (e: any) {
+          if (mounted) setFilesError(e?.message || 'Unable to load files');
+        } finally {
+          if (mounted) setFilesLoading(false);
+        }
+      };
+      load();
+      return () => {
+        mounted = false;
+      };
+    }, []);
     return (
       <div className="min-h-screen bg-gradient-to-br from-cosmic-dark via-cosmic-medium to-purple-primary/20 relative overflow-hidden">
         {/* Liquid Paint Animation Container */}
@@ -78,11 +105,33 @@ export default function AdminLogin() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full"
           >
-            {/* HTML Files will be added here */}
-            <div className="bg-cosmic-medium/50 backdrop-blur-sm border border-purple-primary/30 rounded-xl p-6 hover:border-purple-primary/50 transition-all duration-300">
-              <h3 className="text-white font-semibold mb-2">Coming Soon</h3>
-              <p className="text-gray-400 text-sm">HTML files will be displayed here</p>
-            </div>
+            {filesLoading && (
+              <div className="bg-cosmic-medium/50 backdrop-blur-sm border border-purple-primary/30 rounded-xl p-6">
+                <p className="text-gray-400">Loading files…</p>
+              </div>
+            )}
+            {filesError && (
+              <div className="bg-red-500/10 border border-red-500/40 rounded-xl p-6">
+                <p className="text-red-300 text-sm">{filesError}</p>
+              </div>
+            )}
+            {!filesLoading && !filesError && files.length === 0 && (
+              <div className="bg-cosmic-medium/50 backdrop-blur-sm border border-purple-primary/30 rounded-xl p-6">
+                <h3 className="text-white font-semibold mb-2">No files found</h3>
+                <p className="text-gray-400 text-sm">Add .html files into <code className='text-purple-300'>private-html/</code></p>
+              </div>
+            )}
+            {files.map((name) => (
+              <Link
+                key={name}
+                href={`/admin/files/${encodeURIComponent(name)}`}
+                target="_blank"
+                className="bg-cosmic-medium/50 backdrop-blur-sm border border-purple-primary/30 rounded-xl p-6 hover:border-purple-primary/60 hover:shadow-md transition-all duration-300"
+              >
+                <h3 className="text-white font-semibold mb-2 break-words">{name}.html</h3>
+                <p className="text-gray-400 text-sm">Open in a new tab</p>
+              </Link>
+            ))}
           </motion.div>
 
           <motion.div
