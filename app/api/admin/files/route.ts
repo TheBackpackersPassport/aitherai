@@ -20,7 +20,7 @@ export async function GET() {
       files = entries
         .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.html'))
         .map((e) => e.name.replace(/\.html$/i, ''));
-    } catch (e) {
+    } catch {
       // If directory missing, return empty list to avoid server error
       files = [];
     }

@@ -5,10 +5,7 @@ import { SessionData, sessionOptions } from '@/lib/session';
 import fs from 'fs/promises';
 import path from 'path';
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { name: string } }
-) {
+export async function GET(_req: Request, context: unknown) {
   try {
     const cookieStore = await cookies();
     const session = await getIronSession<SessionData>(cookieStore, sessionOptions);
@@ -16,7 +13,18 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const safeName = params.name.replace(/[^a-zA-Z0-9-_]/g, '');
+    // Decode and sanitize: allow letters, numbers, dash, underscore, and space
+    const decoded = (() => {
+      if (typeof context === 'object' && context !== null && 'params' in context) {
+        const params = (context as { params?: unknown }).params;
+        if (typeof params === 'object' && params !== null && 'name' in (params as Record<string, unknown>)) {
+          const name = (params as { name?: unknown }).name;
+          if (typeof name === 'string') return decodeURIComponent(name);
+        }
+      }
+      return '';
+    })();
+    const safeName = decoded.replace(/[^a-zA-Z0-9-_ ]/g, '').trim();
     const filePath = path.join(process.cwd(), 'private-html', `${safeName}.html`);
 
     try {
@@ -28,7 +36,7 @@ export async function GET(
           'X-Content-Type-Options': 'nosniff',
         },
       });
-    } catch (e) {
+    } catch {
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
   } catch (error) {

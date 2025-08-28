@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +13,6 @@ export default function AdminLogin() {
   const [files, setFiles] = useState<string[]>([]);
   const [filesLoading, setFilesLoading] = useState(false);
   const [filesError, setFilesError] = useState('');
-  const router = useRouter();
 
   // Load private HTML files when authenticated
   useEffect(() => {
@@ -30,8 +28,12 @@ export default function AdminLogin() {
         }
         const data = await res.json();
         if (mounted) setFiles(Array.isArray(data.files) ? data.files : []);
-      } catch (e: any) {
-        if (mounted) setFilesError(e?.message || 'Unable to load files');
+      } catch (e: unknown) {
+        const message =
+          typeof e === 'object' && e !== null && 'message' in e
+            ? String((e as { message?: unknown }).message)
+            : 'Unable to load files';
+        if (mounted) setFilesError(message);
       } finally {
         if (mounted) setFilesLoading(false);
       }
@@ -63,7 +65,7 @@ export default function AdminLogin() {
       } else {
         setError(data.error || 'Login failed');
       }
-    } catch (error) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);

@@ -9,30 +9,33 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/check');
-      const data = await response.json();
-      
-      if (!data.isLoggedIn) {
+    let mounted = true;
+    const run = async () => {
+      try {
+        const response = await fetch('/api/auth/check');
+        const data = await response.json();
+        if (!mounted) return;
+        if (!data.isLoggedIn) {
+          router.push('/admin/login');
+        } else {
+          setIsLoading(false);
+        }
+      } catch {
         router.push('/admin/login');
-      } else {
-        setIsLoading(false);
       }
-    } catch (error) {
-      router.push('/admin/login');
-    }
-  };
+    };
+    run();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
       router.push('/admin/login');
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch (err) {
+      console.error('Logout error:', err);
     }
   };
 
