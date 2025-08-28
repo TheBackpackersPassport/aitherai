@@ -24,26 +24,12 @@ export default function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="grid grid-cols-3 items-center h-20">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="focus:outline-none"
-            >
-              <Image
-                src="/favicon.png"
-                alt="AitherAI Logo"
-                width={100}
-                height={100}
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                priority
-              />
-            </button>
-          </div>
+          <div className="flex items-center space-x-2" />
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center justify-center space-x-8 col-start-2">
             <Link href="#home" className="text-gray-300 hover:text-purple-primary transition-colors">
               Home
             </Link>
@@ -58,16 +44,19 @@ export default function Navigation() {
             </Link>
             <Link
               href="#contact"
-              className="px-6 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 hover:from-teal-600 hover:to-cyan-700"
+              className="px-8 py-2 bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105 hover:from-teal-600 hover:to-cyan-700 min-w-[200px] text-center whitespace-nowrap"
             >
               Start Your Project
             </Link>
           </div>
 
+          {/* Right-side spacer on desktop to keep menu centered */}
+          <div className="hidden md:block col-start-3" />
+
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white"
+            className="md:hidden text-white justify-self-end col-start-3"
           >
             <svg
               className="w-6 h-6"

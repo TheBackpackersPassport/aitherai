@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 export default function HeroSection() {
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative pt-20">
+    <section id="home" className="min-h-screen flex items-center justify-center relative pt-20 pb-12 md:pb-16">
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
@@ -14,29 +14,30 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Logo Image */}
+          {/* Hero Emblem (favicon) */}
           <div className="mb-4">
             <Image
-              src="/images/Aitherai .dev.png"
-              alt="AitherAI Logo"
-              width={500}
-              height={200}
-              className="mx-auto mb-4"
+              src="/new-aitherai-mark.png"
+              alt="AitherAI Emblem"
+              width={600}
+              height={600}
+              className="mx-auto mb-4 w-full max-w-[300px] sm:max-w-[340px] md:max-w-[380px] lg:max-w-[420px]"
               priority
+              quality={100}
               style={{
                 width: '100%',
                 height: 'auto',
-                maxWidth: '500px',
                 imageRendering: 'auto',
                 WebkitFontSmoothing: 'antialiased'
               }}
+              sizes="(max-width: 640px) 300px, (max-width: 768px) 340px, (max-width: 1024px) 380px, 420px"
             />
           </div>
 
           {/* Main Headline */}
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
             <span className="text-white">We Create </span>
-            <span className="gradient-text">Completely Custom</span>
+            <span className="text-teal-300">Completely Custom</span>
             <span className="text-white"> Websites That Convert</span>
           </h1>
 
@@ -114,28 +115,36 @@ export default function HeroSection() {
               See Our Process
             </Link>
           </motion.div>
+
+          {/* Scroll indicator just below CTAs (all viewports) */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
+            className="mt-4 md:mt-6"
+          >
+            <motion.div
+              animate={{ y: [0, 10, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              className="flex items-center justify-center"
+            >
+              <svg
+                className="w-5 h-9 md:w-7 md:h-12 text-gray-400"
+                viewBox="0 0 24 36"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="3" y="2" width="18" height="32" rx="9" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+              </svg>
+            </motion.div>
+          </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <div className="flex flex-col items-center">
-          <span className="text-gray-400 text-sm mb-2">Scroll to explore</span>
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <svg className="w-6 h-6 text-purple-primary" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </motion.div>
-        </div>
-      </motion.div>
     </section>
   );
 }

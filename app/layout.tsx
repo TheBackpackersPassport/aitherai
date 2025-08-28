@@ -7,13 +7,20 @@ export const metadata: Metadata = {
   keywords: "custom website development, AI-powered web development, bespoke websites, no templates, professional web design",
   icons: {
     icon: [
+      // ICO first to ensure best compatibility and aspect ratio in many browsers
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
       { url: '/favicon.png', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: '/favicon.png',
-    apple: '/favicon.png',
+    apple: '/apple-touch-icon.png',
+    other: [
+      { rel: 'mask-icon', url: '/favicon.svg', color: '#14B8A6' },
+    ],
   },
+  themeColor: '#0f172a',
+  manifest: '/site.webmanifest',
   openGraph: {
     title: "AitherAI - Create Without Limits",
     description: "Completely custom websites with AI-powered development. No Squarespace, No WordPress, No Wix.",
