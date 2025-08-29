@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .bg { fill: #14B8A6; }
+      .mark { fill: #ffffff; font: 700 300px/1.1 "Inter", Arial, sans-serif; }
+    </style>
+  </defs>
+  <!-- Solid teal background with rounded corners for better legibility -->
+  <rect class="bg" x="0" y="0" width="512" height="512" rx="96"/>
+  <!-- Bold centered "A" for tiny-size recognition -->
+  <text class="mark" x="50%" y="62%" text-anchor="middle">A</text>
+</svg>

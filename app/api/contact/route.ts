@@ -1,14 +1,8 @@
+// Contact form API using Resend (HTML + text). Always returns 200 to keep UX smooth.
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { websitePackages } from '../../../lib/packages';
 
-// Resend client will be instantiated at runtime inside the handler when API key is present
-
-// Public logo URL for email (emails require absolute URLs for images)
-const LOGO_URL = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://aitherai.dev'}/images/Aitherai%20.dev.png`;
-
-// Strongly-typed contact form payload
-interface ContactFormData {
+type ContactFormData = {
   fullName: string;
   email?: string;
   companyName?: string;
@@ -22,255 +16,79 @@ interface ContactFormData {
   primaryGoal?: string;
   features?: string[];
   vision?: string;
-}
+};
 
-// Reusable brand wrapper for HTML emails
-function renderBrandedEmail(innerHtml: string) {
+function renderHtmlEmail(data: ContactFormData) {
+  const safe = (v?: string) => (v && String(v).trim().length ? v : 'Not provided');
+  const features = data.features && data.features.length ? data.features.join(', ') : 'None specified';
   return `
     <!DOCTYPE html>
     <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>AitherAI</title>
-      <style>
-        body { 
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-          line-height: 1.6; 
-          color: #333; 
-          margin: 0; 
-          padding: 0; 
-          background-color: #f8fafc;
-        }
-        .container { 
-          max-width: 600px; 
-          margin: 0 auto; 
-          background: #ffffff; 
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .header { 
-          background: linear-gradient(135deg, #9333ea 0%, #a855f7 50%, #c084fc 100%); 
-          padding: 40px; 
-          text-align: center; 
-        }
-        .logo { display:block; margin: 0 auto; max-width: 180px; height: auto; }
-        .tagline {
-          color: rgba(255,255,255,0.9); 
-          margin-top: 8px; 
-          font-size: 16px;
-          font-weight: 500;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-        }
-        .content { padding: 40px; }
-        .footer { 
-          background: #f8fafc; 
-          padding: 30px; 
-          text-align: center; 
-          font-size: 14px; 
-          color: #6b7280;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <img class="logo" src="${LOGO_URL}" alt="AitherAI" />
-          <div class="tagline">Create Without Limits</div>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>New Contact Form Submission</title>
+      </head>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; background:#f8fafc; padding:24px; color:#0f172a;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+          <div style="background:#111827;color:#fff;padding:16px 20px;font-weight:700;font-size:18px;">New Contact Form Submission</div>
+          <div style="padding:20px;">
+            <h2 style="margin:0 0 12px 0;font-size:18px;color:#111827;">Contact Information</h2>
+            <ul style="list-style:none;padding:0;margin:0 0 16px 0;line-height:1.7;">
+              <li><strong>Name:</strong> ${safe(data.fullName)}</li>
+              <li><strong>Email:</strong> ${safe(data.email)}</li>
+              <li><strong>Company:</strong> ${safe(data.companyName)}</li>
+              <li><strong>Phone:</strong> ${safe(data.phone)}</li>
+            </ul>
+            <h2 style="margin:16px 0 8px 0;font-size:18px;color:#111827;">Project Details</h2>
+            <ul style="list-style:none;padding:0;margin:0 0 16px 0;line-height:1.7;">
+              <li><strong>How they heard about us:</strong> ${safe(data.howDidYouHear)}</li>
+              <li><strong>Package Interest:</strong> ${safe(data.packageInterest)}</li>
+              <li><strong>Business Type:</strong> ${safe(data.businessType)}</li>
+              <li><strong>Timeline:</strong> ${safe(data.timeline)}</li>
+              <li><strong>Budget:</strong> ${safe(data.budget)}</li>
+              <li><strong>Has Website:</strong> ${safe(data.hasWebsite)}</li>
+            </ul>
+            <h3 style="margin:16px 0 6px 0;font-size:16px;color:#111827;">Primary Goal</h3>
+            <p style="margin:0 0 12px 0;">${safe(data.primaryGoal)}</p>
+            <h3 style="margin:16px 0 6px 0;font-size:16px;color:#111827;">Features Requested</h3>
+            <p style="margin:0 0 12px 0;">${features}</p>
+            <h3 style="margin:16px 0 6px 0;font-size:16px;color:#111827;">Vision/Requirements</h3>
+            <p style="margin:0;">${safe(data.vision)}</p>
+          </div>
+          <div style="padding:12px 20px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;text-align:center;">AitherAI • https://aitherai.dev</div>
         </div>
-        <div class="content">${innerHtml}</div>
-        <div class="footer">
-          <div style="font-weight: 700; color: #9333ea; margin-bottom: 10px;">AITHER AI</div>
-          <p>
-            <a href="https://aitherai.dev" style="color: #9333ea; text-decoration: none;">Our Work</a> | 
-            <a href="mailto:hello@aitherai.dev" style="color: #9333ea; text-decoration: none;">Contact Us</a>
-          </p>
-          <p style="margin-top: 15px;">
-            This email was sent because you submitted an inquiry on our website.<br>
-            <strong>AitherAI</strong> - Custom websites that load in 2 seconds ⚡
-          </p>
-        </div>
-      </div>
-    </body>
+      </body>
     </html>
   `;
 }
 
-// Client confirmation email template
-function createClientConfirmationEmail(formData: ContactFormData) {
-  const { fullName, packageInterest } = formData;
-  const name = fullName || 'there';
-  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
-
-  const inner = `
-    <div class="greeting" style="font-size:24px;font-weight:700;color:#9333ea;margin-bottom:20px;text-align:center;">Welcome to AitherAI, ${name}! 🎉</div>
-    <p class="intro-text" style="font-size:18px;color:#4b5563;text-align:center;margin-bottom:16px;">
-      Thank you for expressing interest in working with us. We're excited about the possibility of creating something amazing together!
-    </p>
-    ${
-      packageInterest
-        ? `<p style="text-align:center;color:#374151;margin-bottom:24px;">
-            Selected package: <strong>${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}</strong>
-           </p>`
-        : ''
-    }
-    <div class="highlight-box" style="background:linear-gradient(135deg,#f3e8ff 0%,#fae8ff 100%);border:2px solid #e9d5ff;border-radius:12px;padding:25px;margin:25px 0;">
-      <h3 style="color:#9333ea;margin-top:0;">What happens next:</h3>
-      <div class="steps">
-        <div class="step" style="margin:15px 0;">We'll review your project details and prepare personalized recommendations</div>
-        <div class="step" style="margin:15px 0;">Schedule a discovery call to understand your vision and goals</div>
-        <div class="step" style="margin:15px 0;">Present a custom proposal with timeline and investment details</div>
-        <div class="step" style="margin:15px 0;">Begin creating your completely custom website solution</div>
-      </div>
-      <p style="text-align:center;font-weight:600;color:#9333ea;font-size:18px;">📅 We aim to get back to all enquiries <strong>within 24 hours</strong></p>
-    </div>
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;margin:25px 0;">
-      <h3 style="color:#16a34a;margin:0 0 15px 0;">Why businesses choose AitherAI:</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
-        <div>⚡ <strong>Lightning Fast:</strong> 2-second load guarantee</div>
-        <div>🎨 <strong>Completely Custom:</strong> No templates ever</div>
-        <div>✨ <strong>Easy Management:</strong> WordPress-simple updates</div>
-        <div>🤝 <strong>Professional Support:</strong> Training included</div>
-      </div>
-    </div>
-    <a href="https://aitherai.dev" class="cta-button" style="display:block;background:linear-gradient(135deg,#9333ea 0%,#a855f7 100%);color:white;padding:16px 32px;text-decoration:none;border-radius:8px;font-weight:700;text-align:center;margin:25px auto;width:fit-content;">View Our Portfolio & Process</a>
-    <div style="background:#fffbeb;border:1px solid #fed7aa;border-radius:8px;padding:20px;margin:25px 0;text-align:center;">
-      <h4 style="color:#d97706;margin:0 0 10px 0;">Questions Before Our Call?</h4>
-      <p style="color:#92400e;margin:0;">📧 <a href="mailto:hello@aitherai.dev" style="color:#d97706;">hello@aitherai.dev</a> | 📱 <a href="tel:+1234567890" style="color:#d97706;">+1 (234) 567-8900</a></p>
-    </div>
-    <p style="text-align:center;font-weight:600;margin:30px 0 10px 0;">Looking forward to creating something extraordinary together!</p>
-    <p style="text-align:center;color:#6b7280;"><strong>Best regards,</strong><br>The AitherAI Team<br><em style="color:#9333ea;">Create Without Limits</em></p>
-  `;
-
-  return renderBrandedEmail(inner);
-}
-
-// Internal notification email template
-function createInternalNotificationEmail(formData: ContactFormData) {
-  const {
-    fullName,
-    email,
-    companyName,
-    phone,
-    howDidYouHear,
-    packageInterest,
-    businessType,
-    timeline,
-    budget,
-    hasWebsite,
-    primaryGoal,
-    features,
-    vision,
-  } = formData;
-
-  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
-  const inner = `
-    <h2 style="margin:0 0 10px 0;">🚀 New Project Inquiry</h2>
-    <h3 style="margin:20px 0 10px 0;">Contact Information:</h3>
-    <ul style="list-style:none;padding:0;margin:0;">
-      <li><strong>Name:</strong> ${fullName || 'Not provided'}</li>
-      <li><strong>Email:</strong> ${email || 'Not provided'}</li>
-      <li><strong>Company:</strong> ${companyName || 'Not provided'}</li>
-      <li><strong>Phone:</strong> ${phone || 'Not provided'}</li>
-      <li><strong>How did they hear?:</strong> ${howDidYouHear || 'Not specified'}</li>
-      <li><strong>Package Interest:</strong> ${
-        packageInterest
-          ? `${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
-          : 'Not specified'
-      }</li>
-      <li><strong>Business Type:</strong> ${businessType || 'Not specified'}</li>
-      <li><strong>Timeline:</strong> ${timeline || 'Not specified'}</li>
-      <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
-      <li><strong>Has Website:</strong> ${hasWebsite || 'Not specified'}</li>
-    </ul>
-    <h3 style="margin:20px 0 10px 0;">Primary Goal:</h3>
-    <p>${primaryGoal || 'Not provided'}</p>
-    <h3 style="margin:20px 0 10px 0;">Features Requested:</h3>
-    <p>${features && Array.isArray(features) ? features.join(', ') : 'None specified'}</p>
-    <h3 style="margin:20px 0 10px 0;">Vision/Requirements:</h3>
-    <p>${vision || 'Not provided'}</p>
-    <hr style="margin:24px 0; border:0; border-top:1px solid #e5e7eb;" />
-    <p><a href="mailto:${email}?subject=Re: Your AitherAI Project Inquiry">Reply to ${fullName}</a></p>
-  `;
-
-  return renderBrandedEmail(inner);
-}
-
-// Plain-text fallbacks
-function createClientConfirmationText(formData: ContactFormData) {
-  const { fullName, packageInterest } = formData;
-  const name = fullName || 'there';
-  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
+function renderTextEmail(data: ContactFormData) {
+  const safe = (v?: string) => (v && String(v).trim().length ? v : 'Not provided');
+  const features = data.features && data.features.length ? data.features.join(', ') : 'None specified';
   return [
-    `Welcome to AitherAI, ${name}!`,
+    'New Contact Form Submission',
     '',
-    packageInterest
-      ? `Selected package: ${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
-      : undefined,
-    packageInterest ? '' : undefined,
-    'Thank you for your interest. Here is what happens next:',
-    '- We review your details and prepare recommendations',
-    '- Schedule a discovery call',
-    '- Present a custom proposal with timeline and investment',
-    '- Begin creating your custom website',
+    `Name: ${safe(data.fullName)}`,
+    `Email: ${safe(data.email)}`,
+    `Company: ${safe(data.companyName)}`,
+    `Phone: ${safe(data.phone)}`,
     '',
-    'View our portfolio & process: https://aitherai.dev',
+    `How they heard about us: ${safe(data.howDidYouHear)}`,
+    `Package Interest: ${safe(data.packageInterest)}`,
+    `Business Type: ${safe(data.businessType)}`,
+    `Timeline: ${safe(data.timeline)}`,
+    `Budget: ${safe(data.budget)}`,
+    `Has Website: ${safe(data.hasWebsite)}`,
     '',
-    'Questions before our call? Email hello@aitherai.dev',
-  ].join('\n');
-}
-
-function createInternalNotificationText(formData: ContactFormData) {
-  const {
-    fullName,
-    email,
-    companyName,
-    phone,
-    howDidYouHear,
-    packageInterest,
-    businessType,
-    timeline,
-    budget,
-    hasWebsite,
-    primaryGoal,
-    features,
-    vision,
-  } = formData;
-
-  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
-
-  return [
-    'New Project Inquiry',
+    `Primary Goal:`,
+    `${safe(data.primaryGoal)}`,
     '',
-    `Name: ${fullName}`,
-    `Email: ${email}`,
-    `Company: ${companyName || 'Not provided'}`,
-    `Phone: ${phone || 'Not provided'}`,
+    `Features Requested:`,
+    `${features}`,
     '',
-    'How did they hear:',
-    `${howDidYouHear || 'Not specified'}`,
-    'Package Interest:',
-    `${
-      packageInterest
-        ? `${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
-        : 'Not specified'
-    }`,
-    'Business Type:',
-    `${businessType || 'Not specified'}`,
-    `Timeline: ${timeline || 'Not specified'}`,
-    `Budget: ${budget || 'Not specified'}`,
-    `Has Website: ${hasWebsite || 'Not specified'}`,
-    '',
-    'Primary Goal:',
-    `${primaryGoal || 'Not provided'}`,
-    '',
-    'Features Requested:',
-    `${features && Array.isArray(features) ? features.join(', ') : 'None specified'}`,
-    '',
-    'Vision/Requirements:',
-    `${vision || 'Not provided'}`,
+    `Vision/Requirements:`,
+    `${safe(data.vision)}`,
   ].join('\n');
 }
 
@@ -281,36 +99,84 @@ export async function POST(request: Request) {
     // Log the form submission
     console.log('Contact form submission received:', data);
     
-    // Send emails via Resend if configured
+    // Send via Resend if configured
     const resendApiKey = process.env.RESEND_API_KEY;
-    const fromAddress = process.env.RESEND_FROM || 'AitherAI <hello@aitherai.dev>';
-    const internalTo = process.env.EMAIL_TO; // keep existing env name for internal notifications
+    const from = process.env.RESEND_FROM || 'AitherAI <hello@aitherai.dev>';
+    const to = process.env.EMAIL_TO;
 
-    if (resendApiKey && fromAddress && internalTo) {
+    console.log('Environment Variables Debug:', {
+      RESEND_API_KEY: process.env.RESEND_API_KEY ? `SET (${process.env.RESEND_API_KEY.substring(0, 8)}...)` : 'MISSING',
+      RESEND_FROM: process.env.RESEND_FROM || 'MISSING',  
+      EMAIL_TO: process.env.EMAIL_TO || 'MISSING',
+      NODE_ENV: process.env.NODE_ENV || 'unknown'
+    });
+
+    if (resendApiKey && from && to) {
       try {
         const resend = new Resend(resendApiKey);
-        // Internal notification
-        await resend.emails.send({
-          from: fromAddress,
-          to: [internalTo],
-          subject: `New Website Inquiry from ${data.fullName}`,
-          html: createInternalNotificationEmail(data),
-          text: createInternalNotificationText(data),
+
+        // 1) Internal notification to business owner
+        const { data: internalData, error: internalError } = await resend.emails.send({
+          from,
+          to: [to],
+          subject: `New Website Inquiry from ${data.fullName || 'Unknown'}`,
+          html: renderHtmlEmail(data),
+          text: renderTextEmail(data),
           replyTo: data.email,
         });
+        console.log('Resend internal email attempted', { id: internalData?.id, hasError: !!internalError });
 
-        // Client confirmation (if client email is provided)
+        // 2) Customer confirmation (if customer email provided)
         if (data.email) {
-          await resend.emails.send({
-            from: fromAddress,
-            to: [data.email],
-            subject: "Welcome to AitherAI - Let's Create Something Amazing!",
-            html: createClientConfirmationEmail(data),
-            text: createClientConfirmationText(data),
-          });
-        }
+          const customerHtml = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Thanks for contacting AitherAI!</title>
+              </head>
+              <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f8fafc;padding:24px;color:#0f172a;">
+                <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+                  <div style="background:#111827;color:#fff;padding:16px 20px;font-weight:700;font-size:18px;">Thanks for contacting AitherAI!</div>
+                  <div style="padding:20px;line-height:1.7;">
+                    <p>Hi ${data.fullName || 'there'},</p>
+                    <p>Thanks for reaching out. We received your inquiry and our team will respond within <strong>24 hours</strong>.</p>
+                    <p>In the meantime, feel free to explore our work and process:</p>
+                    <p><a href="https://aitherai.dev" style="color:#4f46e5;text-decoration:underline;">https://aitherai.dev</a></p>
+                    <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;" />
+                    <p style="margin:0;">
+                      AitherAI<br/>
+                      Email: <a href="mailto:hello@aitherai.dev" style="color:#4f46e5;">hello@aitherai.dev</a><br/>
+                      Website: <a href="https://aitherai.dev" style="color:#4f46e5;">aitherai.dev</a>
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
+          const customerText = [
+            'Thanks for contacting AitherAI!',
+            '',
+            `Hi ${data.fullName || 'there'},`,
+            'We received your inquiry and will respond within 24 hours.',
+            '',
+            'Visit us: https://aitherai.dev',
+            '',
+            'AitherAI',
+            'Email: hello@aitherai.dev',
+            'Website: https://aitherai.dev',
+          ].join('\n');
 
-        console.log('Resend emails attempted');
+          const { data: customerData, error: customerError } = await resend.emails.send({
+            from,
+            to: [data.email],
+            subject: 'Thanks for contacting AitherAI!',
+            html: customerHtml,
+            text: customerText,
+          });
+          console.log('Resend customer email attempted', { id: customerData?.id, hasError: !!customerError });
+        }
       } catch (emailError) {
         console.error('Error sending via Resend:', emailError);
         // Continue anyway - don't fail the whole request just because email didn't send
