@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { websitePackages } from '../../../lib/packages';
 
 // Initialize Resend client (requires RESEND_API_KEY)
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -156,20 +157,27 @@ function createInternalNotificationEmail(formData: ContactFormData) {
     features,
     vision,
   } = formData;
+
+  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
   const inner = `
     <h2 style="margin:0 0 10px 0;">🚀 New Project Inquiry</h2>
     <h3 style="margin:20px 0 10px 0;">Contact Information:</h3>
-    <p><strong>Name:</strong> ${fullName}</p>
-    <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-    <p><strong>Company:</strong> ${companyName || 'Not provided'}</p>
-    <p><strong>Phone:</strong> <a href="tel:${phone}">${phone || 'Not provided'}</a></p>
-    <h3 style="margin:20px 0 10px 0;">Project Details:</h3>
-    <p><strong>How did they hear about us:</strong> ${howDidYouHear || 'Not specified'}</p>
-    <p><strong>Package Interest:</strong> ${packageInterest || 'Not specified'}</p>
-    <p><strong>Business Type:</strong> ${businessType || 'Not provided'}</p>
-    <p><strong>Timeline:</strong> ${timeline || 'Not specified'}</p>
-    <p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
-    <p><strong>Has Website:</strong> ${hasWebsite || 'Not specified'}</p>
+    <ul style="list-style:none;padding:0;margin:0;">
+      <li><strong>Name:</strong> ${fullName || 'Not provided'}</li>
+      <li><strong>Email:</strong> ${email || 'Not provided'}</li>
+      <li><strong>Company:</strong> ${companyName || 'Not provided'}</li>
+      <li><strong>Phone:</strong> ${phone || 'Not provided'}</li>
+      <li><strong>How did they hear?:</strong> ${howDidYouHear || 'Not specified'}</li>
+      <li><strong>Package Interest:</strong> ${
+        packageInterest
+          ? `${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
+          : 'Not specified'
+      }</li>
+      <li><strong>Business Type:</strong> ${businessType || 'Not specified'}</li>
+      <li><strong>Timeline:</strong> ${timeline || 'Not specified'}</li>
+      <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
+      <li><strong>Has Website:</strong> ${hasWebsite || 'Not specified'}</li>
+    </ul>
     <h3 style="margin:20px 0 10px 0;">Primary Goal:</h3>
     <p>${primaryGoal || 'Not provided'}</p>
     <h3 style="margin:20px 0 10px 0;">Features Requested:</h3>
@@ -219,6 +227,8 @@ function createInternalNotificationText(formData: ContactFormData) {
     vision,
   } = formData;
 
+  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
+
   return [
     'New Project Inquiry',
     '',
@@ -227,9 +237,16 @@ function createInternalNotificationText(formData: ContactFormData) {
     `Company: ${companyName || 'Not provided'}`,
     `Phone: ${phone || 'Not provided'}`,
     '',
-    `How did they hear: ${howDidYouHear || 'Not specified'}`,
-    `Package Interest: ${packageInterest || 'Not specified'}`,
-    `Business Type: ${businessType || 'Not provided'}`,
+    'How did they hear:',
+    `${howDidYouHear || 'Not specified'}`,
+    'Package Interest:',
+    `${
+      packageInterest
+        ? `${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
+        : 'Not specified'
+    }`,
+    'Business Type:',
+    `${businessType || 'Not specified'}`,
     `Timeline: ${timeline || 'Not specified'}`,
     `Budget: ${budget || 'Not specified'}`,
     `Has Website: ${hasWebsite || 'Not specified'}`,
