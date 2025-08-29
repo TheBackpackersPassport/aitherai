@@ -7,6 +7,23 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Public logo URL for email (emails require absolute URLs for images)
 const LOGO_URL = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://aitherai.dev'}/images/Aitherai%20.dev.png`;
 
+// Strongly-typed contact form payload
+interface ContactFormData {
+  fullName: string;
+  email?: string;
+  companyName?: string;
+  phone?: string;
+  howDidYouHear?: string;
+  packageInterest?: string;
+  businessType?: string;
+  timeline?: string;
+  budget?: string;
+  hasWebsite?: string;
+  primaryGoal?: string;
+  features?: string[];
+  vision?: string;
+}
+
 // Reusable brand wrapper for HTML emails
 function renderBrandedEmail(innerHtml: string) {
   return `
@@ -82,8 +99,8 @@ function renderBrandedEmail(innerHtml: string) {
 }
 
 // Client confirmation email template
-function createClientConfirmationEmail(formData: any) {
-  const { fullName, email, companyName, phone, budget, timeline } = formData;
+function createClientConfirmationEmail(formData: ContactFormData) {
+  const { fullName } = formData;
   const name = fullName || 'there';
 
   const inner = `
@@ -123,7 +140,7 @@ function createClientConfirmationEmail(formData: any) {
 }
 
 // Internal notification email template
-function createInternalNotificationEmail(formData: any) {
+function createInternalNotificationEmail(formData: ContactFormData) {
   const {
     fullName,
     email,
@@ -167,7 +184,7 @@ function createInternalNotificationEmail(formData: any) {
 }
 
 // Plain-text fallbacks
-function createClientConfirmationText(formData: any) {
+function createClientConfirmationText(formData: ContactFormData) {
   const { fullName } = formData;
   const name = fullName || 'there';
   return [
@@ -185,7 +202,7 @@ function createClientConfirmationText(formData: any) {
   ].join('\n');
 }
 
-function createInternalNotificationText(formData: any) {
+function createInternalNotificationText(formData: ContactFormData) {
   const {
     fullName,
     email,
@@ -230,7 +247,7 @@ function createInternalNotificationText(formData: any) {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const data = (await request.json()) as ContactFormData;
     
     // Log the form submission
     console.log('Contact form submission received:', data);
@@ -249,8 +266,8 @@ export async function POST(request: Request) {
           subject: `New Website Inquiry from ${data.fullName}`,
           html: createInternalNotificationEmail(data),
           text: createInternalNotificationText(data),
-          reply_to: data.email,
-        } as any);
+          replyTo: data.email,
+        });
 
         // Client confirmation (if client email is provided)
         if (data.email) {
@@ -260,7 +277,7 @@ export async function POST(request: Request) {
             subject: "Welcome to AitherAI - Let's Create Something Amazing!",
             html: createClientConfirmationEmail(data),
             text: createClientConfirmationText(data),
-          } as any);
+          });
         }
 
         console.log('Resend emails attempted');
