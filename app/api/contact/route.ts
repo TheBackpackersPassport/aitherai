@@ -101,14 +101,22 @@ function renderBrandedEmail(innerHtml: string) {
 
 // Client confirmation email template
 function createClientConfirmationEmail(formData: ContactFormData) {
-  const { fullName } = formData;
+  const { fullName, packageInterest } = formData;
   const name = fullName || 'there';
+  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
 
   const inner = `
     <div class="greeting" style="font-size:24px;font-weight:700;color:#9333ea;margin-bottom:20px;text-align:center;">Welcome to AitherAI, ${name}! 🎉</div>
-    <p class="intro-text" style="font-size:18px;color:#4b5563;text-align:center;margin-bottom:30px;">
+    <p class="intro-text" style="font-size:18px;color:#4b5563;text-align:center;margin-bottom:16px;">
       Thank you for expressing interest in working with us. We're excited about the possibility of creating something amazing together!
     </p>
+    ${
+      packageInterest
+        ? `<p style="text-align:center;color:#374151;margin-bottom:24px;">
+            Selected package: <strong>${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}</strong>
+           </p>`
+        : ''
+    }
     <div class="highlight-box" style="background:linear-gradient(135deg,#f3e8ff 0%,#fae8ff 100%);border:2px solid #e9d5ff;border-radius:12px;padding:25px;margin:25px 0;">
       <h3 style="color:#9333ea;margin-top:0;">What happens next:</h3>
       <div class="steps">
@@ -193,11 +201,16 @@ function createInternalNotificationEmail(formData: ContactFormData) {
 
 // Plain-text fallbacks
 function createClientConfirmationText(formData: ContactFormData) {
-  const { fullName } = formData;
+  const { fullName, packageInterest } = formData;
   const name = fullName || 'there';
+  const selectedPkg = websitePackages.find((p) => p.name === packageInterest);
   return [
     `Welcome to AitherAI, ${name}!`,
     '',
+    packageInterest
+      ? `Selected package: ${packageInterest}${selectedPkg ? ` — ${selectedPkg.price}` : ''}`
+      : undefined,
+    packageInterest ? '' : undefined,
     'Thank you for your interest. Here is what happens next:',
     '- We review your details and prepare recommendations',
     '- Schedule a discovery call',
