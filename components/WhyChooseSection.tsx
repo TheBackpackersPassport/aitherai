@@ -13,7 +13,8 @@ const features = [
     points: [
       'No templates or themes ever',
       'Built specifically for your business',
-      'Unique design that stands out'
+      'Unique design that stands out',
+      'Custom CMS content modeling with Strapi'
     ]
   },
   {
@@ -26,7 +27,8 @@ const features = [
     points: [
       'Faster development without compromising quality',
       'Intelligent optimization and testing',
-      'Future-proof technology stack'
+      'Future-proof technology stack',
+      'Optimized CMS performance and publishing flow'
     ]
   },
   {
@@ -39,7 +41,8 @@ const features = [
     points: [
       'Deep discovery process',
       'Understanding your business goals',
-      'Strategic recommendations included'
+      'Strategic recommendations included',
+      'Content architecture & editorial workflow planning'
     ]
   },
   {
@@ -52,7 +55,37 @@ const features = [
     points: [
       'Expert developers and designers',
       'Full-service capabilities',
-      'Ongoing support and optimization'
+      'Ongoing support and optimization',
+      'Professional handover and Strapi CMS training'
+    ]
+  }
+  ,
+  {
+    title: 'Easy Content Management',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 6h8M8 10h8M8 14h5M5 4a2 2 0 00-2 2v12a2 2 0 002 2h9l5-5V6a2 2 0 00-2-2H5z" />
+      </svg>
+    ),
+    points: [
+      'WordPress-simple admin panel',
+      'Update content without code',
+      'Professional handover process',
+      'No technical knowledge required'
+    ]
+  },
+  {
+    title: 'Lightning-Fast Performance',
+    icon: (
+      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+    points: [
+      '2-second load time guarantee',
+      '99.9% uptime reliability',
+      'Mobile-optimized for all devices',
+      'Performance monitoring included'
     ]
   }
 ];
@@ -77,7 +110,7 @@ export default function WhyChooseSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}

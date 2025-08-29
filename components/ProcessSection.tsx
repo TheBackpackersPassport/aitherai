@@ -51,11 +51,12 @@ const steps = [
   {
     number: '04',
     title: 'Launch & Support',
-    description: 'We handle the deployment, provide training, and offer ongoing support to ensure your website continues to perform.',
+    description: 'We handle deployment and deliver a professional, comprehensive handover—CMS training, complete documentation, performance monitoring setup, and clear options for ongoing support.',
     points: [
-      'Professional deployment',
-      'Training and handover',
-      'Ongoing support and optimization'
+      'Professional deployment & performance monitoring setup',
+      'Strapi CMS training for your team',
+      'Complete documentation & handover package',
+      'Ongoing support options and optimization'
     ],
     icon: (
       <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
