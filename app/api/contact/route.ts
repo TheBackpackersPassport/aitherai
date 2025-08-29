@@ -104,16 +104,19 @@ export async function POST(request: Request) {
     const from = process.env.RESEND_FROM || 'AitherAI <hello@aitherai.dev>';
     const to = process.env.EMAIL_TO;
 
-    console.log('Env presence', {
-      hasKey: !!resendApiKey,
-      hasFrom: !!from,
-      hasTo: !!to,
+    console.log('Environment Variables Debug:', {
+      RESEND_API_KEY: process.env.RESEND_API_KEY ? `SET (${process.env.RESEND_API_KEY.substring(0, 8)}...)` : 'MISSING',
+      RESEND_FROM: process.env.RESEND_FROM || 'MISSING',  
+      EMAIL_TO: process.env.EMAIL_TO || 'MISSING',
+      NODE_ENV: process.env.NODE_ENV || 'unknown'
     });
 
     if (resendApiKey && from && to) {
       try {
         const resend = new Resend(resendApiKey);
-        const { data: sendData, error: sendError } = await resend.emails.send({
+
+        // 1) Internal notification to business owner
+        const { data: internalData, error: internalError } = await resend.emails.send({
           from,
           to: [to],
           subject: `New Website Inquiry from ${data.fullName || 'Unknown'}`,
@@ -121,7 +124,59 @@ export async function POST(request: Request) {
           text: renderTextEmail(data),
           replyTo: data.email,
         });
-        console.log('Resend email attempted', { id: sendData?.id, hasError: !!sendError });
+        console.log('Resend internal email attempted', { id: internalData?.id, hasError: !!internalError });
+
+        // 2) Customer confirmation (if customer email provided)
+        if (data.email) {
+          const customerHtml = `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Thanks for contacting AitherAI!</title>
+              </head>
+              <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:#f8fafc;padding:24px;color:#0f172a;">
+                <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
+                  <div style="background:#111827;color:#fff;padding:16px 20px;font-weight:700;font-size:18px;">Thanks for contacting AitherAI!</div>
+                  <div style="padding:20px;line-height:1.7;">
+                    <p>Hi ${data.fullName || 'there'},</p>
+                    <p>Thanks for reaching out. We received your inquiry and our team will respond within <strong>24 hours</strong>.</p>
+                    <p>In the meantime, feel free to explore our work and process:</p>
+                    <p><a href="https://aitherai.dev" style="color:#4f46e5;text-decoration:underline;">https://aitherai.dev</a></p>
+                    <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;" />
+                    <p style="margin:0;">
+                      AitherAI<br/>
+                      Email: <a href="mailto:hello@aitherai.dev" style="color:#4f46e5;">hello@aitherai.dev</a><br/>
+                      Website: <a href="https://aitherai.dev" style="color:#4f46e5;">aitherai.dev</a>
+                    </p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
+          const customerText = [
+            'Thanks for contacting AitherAI!',
+            '',
+            `Hi ${data.fullName || 'there'},`,
+            'We received your inquiry and will respond within 24 hours.',
+            '',
+            'Visit us: https://aitherai.dev',
+            '',
+            'AitherAI',
+            'Email: hello@aitherai.dev',
+            'Website: https://aitherai.dev',
+          ].join('\n');
+
+          const { data: customerData, error: customerError } = await resend.emails.send({
+            from,
+            to: [data.email],
+            subject: 'Thanks for contacting AitherAI!',
+            html: customerHtml,
+            text: customerText,
+          });
+          console.log('Resend customer email attempted', { id: customerData?.id, hasError: !!customerError });
+        }
       } catch (emailError) {
         console.error('Error sending via Resend:', emailError);
         // Continue anyway - don't fail the whole request just because email didn't send
