@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import SuccessPopup from './SuccessPopup';
+import { websitePackages } from '../lib/packages';
 
 interface FormData {
   fullName: string;
@@ -193,9 +194,9 @@ export default function ContactForm() {
                   className="w-full px-4 py-3 bg-cosmic-dark/50 border border-purple-primary/30 rounded-lg text-white focus:outline-none focus:border-purple-primary transition-colors"
                 >
                   <option value="">Select a package</option>
-                  <option value="starter">Starter Package</option>
-                  <option value="professional">Professional Package</option>
-                  <option value="enterprise">Enterprise Package</option>
+                  {websitePackages.map((pkg) => (
+                    <option key={pkg.name} value={pkg.name}>{pkg.name}</option>
+                  ))}
                   <option value="unsure">Not sure yet</option>
                 </select>
               </div>
