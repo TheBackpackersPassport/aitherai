@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { websitePackages } from '../../../lib/packages';
 
-// Initialize Resend client (requires RESEND_API_KEY)
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Resend client will be instantiated at runtime inside the handler when API key is present
 
 // Public logo URL for email (emails require absolute URLs for images)
 const LOGO_URL = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://aitherai.dev'}/images/Aitherai%20.dev.png`;
@@ -289,6 +288,7 @@ export async function POST(request: Request) {
 
     if (resendApiKey && fromAddress && internalTo) {
       try {
+        const resend = new Resend(resendApiKey);
         // Internal notification
         await resend.emails.send({
           from: fromAddress,
