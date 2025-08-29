@@ -195,7 +195,9 @@ export default function ContactForm() {
                 >
                   <option value="">Select a package</option>
                   {websitePackages.map((pkg) => (
-                    <option key={pkg.name} value={pkg.name}>{pkg.name}</option>
+                    <option key={pkg.name} value={pkg.name}>
+                      {pkg.name} — {pkg.price}
+                    </option>
                   ))}
                   <option value="unsure">Not sure yet</option>
                 </select>
